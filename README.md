@@ -89,6 +89,7 @@ Follow steps below:
 2. Click `demo_client` 
 3. Click on `Installation` in top menu
 4. in `Format Option` select a format `Keycloak OIDC JSON` and click Download
+5. move `keycloak.json` in the root folder app
 
 ### Setup keycloak.json in app PHP
 
