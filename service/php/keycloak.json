@@ -1,0 +1,10 @@
+{
+  "realm": "app-realm",
+  "auth-server-url": "http://localhost:2080/auth",
+  "ssl-required": "external",
+  "resource": "php_service",
+  "public-client": true,
+  "verify-token-audience": true,
+  "use-resource-role-mappings": true,
+  "confidential-port": 0
+}

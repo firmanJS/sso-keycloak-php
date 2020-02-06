@@ -1,0 +1,59 @@
+version: '3'
+services:
+
+  keycloak_db_sso:
+    image: postgres:11.2-alpine
+    environment:
+        - POSTGRES_DB=${POSTGRES_DB}
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - POSTGRES_ROOT_PASSWORD=${POSTGRES_ROOT_PASSWORD}
+    networks:
+      service_sso_net:
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - keycloak_sso_vol:/var/lib/postgresql/data
+
+  keycloak:
+    image: jboss/keycloak:7.0.1
+    hostname: keycloak
+    environment:
+      - DB_VENDOR=${DB_VENDOR}
+      - DB_ADDR=${DB_ADDR}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_SCHEMA=${DB_SCHEMA}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - PROXY_ADDRESS_FORWARDING=${PROXY_ADDRESS_FORWARDING}
+      - KEYCLOAK_LOGLEVEL=${KEYCLOAK_LOGLEVEL}
+      - KEYCLOAK_USER=${KEYCLOAK_USER}
+      - KEYCLOAK_PASSWORD=${KEYCLOAK_PASSWORD}
+    networks:
+      service_sso_net:
+    ports:
+      - "${KEYCLOAK_PORT}:8080"
+    depends_on: 
+      - keycloak_db_sso
+  
+  # for PHP example uncomment this service if using PHP
+  service_app:
+    build:
+      context: ./service/php
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      service_sso_net:
+    env_file: 
+      - .env
+    ports: 
+      - ${SERVICE_PORT}:80
+    volumes: 
+      - ./service/php:/var/www/html/
+
+networks:
+  service_sso_net:
+
+volumes: 
+  keycloak_sso_vol:
